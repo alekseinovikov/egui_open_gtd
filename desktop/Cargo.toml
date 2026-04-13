@@ -1,0 +1,15 @@
+[package]
+name = "eframe_template_desktop"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+
+[lints]
+workspace = true
+
+[dependencies]
+eframe_template = { path = "../android" }
+egui = "0.34.1"
+eframe = { version = "0.34.1", features = ["persistence"] }
+env_logger = "0.11.8"

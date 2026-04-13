@@ -890,13 +890,21 @@ dependencies = [
 name = "eframe_template"
 version = "0.1.0"
 dependencies = [
+ "android-activity",
  "eframe",
  "egui",
- "env_logger",
  "log",
  "serde",
- "wasm-bindgen-futures",
- "web-sys",
+]
+
+[[package]]
+name = "eframe_template_desktop"
+version = "0.1.0"
+dependencies = [
+ "eframe",
+ "eframe_template",
+ "egui",
+ "env_logger",
 ]
 
 [[package]]
