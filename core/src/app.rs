@@ -1,78 +1,60 @@
-use crate::widgets::{Action, ButtonWidget, CenteredContainerWidget, TextWidget, Widget};
+use crate::Screen as _;
+use crate::main_screen::MainScreen;
+use crate::widgets::Action;
+use egui::ThemePreference;
+use std::cell::RefCell;
+use std::rc::Rc;
 
-#[derive(Default, serde::Deserialize, serde::Serialize)]
-#[serde(default)]
-pub struct TemplateApp {
-    dark_mode: bool,
-    #[serde(skip)]
-    root: Option<Box<dyn Widget>>,
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct App {
+    state: Rc<RefCell<AppState>>,
 }
 
-impl TemplateApp {
+impl App {
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        let mut app: Self = cc
-            .storage
-            .and_then(|s| eframe::get_value(s, eframe::APP_KEY))
-            .unwrap_or_default();
-
-        let theme = if app.dark_mode {
-            egui::ThemePreference::Dark
-        } else {
-            egui::ThemePreference::Light
-        };
-        cc.egui_ctx.set_theme(theme);
-
-        app.rebuild_ui();
-        app
-    }
-
-    fn rebuild_ui(&mut self) {
-        let label = if self.dark_mode {
-            "Switch to Light"
-        } else {
-            "Switch to Dark"
-        };
-
-        self.root = Some(Box::new(
-            CenteredContainerWidget::new()
-                .child(TextWidget::new("Hello World!"))
-                .child(ButtonWidget::new(label, Action::ToggleTheme)),
-        ));
-    }
-
-    fn handle_action(&mut self, action: Action, ctx: &egui::Context) {
-        match action {
-            Action::ToggleTheme => {
-                self.dark_mode = !self.dark_mode;
-                let theme = if self.dark_mode {
-                    egui::ThemePreference::Dark
-                } else {
-                    egui::ThemePreference::Light
-                };
-                ctx.set_theme(theme);
-            }
+        cc.egui_ctx.set_theme(ThemePreference::Dark);
+        Self {
+            state: Rc::new(RefCell::new(AppState::default())),
         }
-        self.rebuild_ui();
     }
 }
 
-impl eframe::App for TemplateApp {
-    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        // Take the root out so `self` is free for handle_action
-        let root = self.root.take().expect("root widget not initialized");
-        let mut triggered_actions: Vec<Action> = vec![];
-        egui::CentralPanel::default().show_inside(ui, |ui| {
-            let actions = root.render(ui);
-            triggered_actions.extend(actions);
-        });
-        self.root = Some(root);
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct AppState {
+    pub(crate) dark_mode: bool,
+}
 
-        for action in triggered_actions {
-            self.handle_action(action, ui.ctx());
-        }
+impl Default for AppState {
+    fn default() -> Self {
+        Self { dark_mode: true }
     }
+}
 
-    fn save(&mut self, storage: &mut dyn eframe::Storage) {
-        eframe::set_value(storage, eframe::APP_KEY, self);
+impl eframe::App for App {
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        MainScreen::new(&self.state, ui).render(ui, _frame);
+    }
+}
+
+pub(crate) struct ThemeSwitchAction {
+    app_state: Rc<RefCell<AppState>>,
+    ctx: egui::Context,
+}
+
+impl ThemeSwitchAction {
+    pub(crate) fn new(ctx: egui::Context, app_state: Rc<RefCell<AppState>>) -> Self {
+        Self { app_state, ctx }
+    }
+}
+
+impl Action for ThemeSwitchAction {
+    fn run_action(&mut self) {
+        let new_theme = if self.app_state.borrow().dark_mode {
+            ThemePreference::Light
+        } else {
+            ThemePreference::Dark
+        };
+        self.app_state.borrow_mut().dark_mode = new_theme == ThemePreference::Dark;
+        self.ctx.set_theme(new_theme);
     }
 }

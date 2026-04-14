@@ -11,7 +11,7 @@ fn android_main(app: android_activity::AndroidApp) {
     eframe::run_native(
         "egui Open GTD",
         options,
-        Box::new(|cc| Ok(Box::new(open_gtd_core::TemplateApp::new(cc)))),
+        Box::new(|cc| Ok(Box::new(open_gtd_core::App::new(cc)))),
     )
     .expect("Failed to run app");
 }

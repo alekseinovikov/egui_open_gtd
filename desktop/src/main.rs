@@ -20,6 +20,9 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "egui Open GTD",
         native_options,
-        Box::new(|cc| Ok(Box::new(open_gtd_core::TemplateApp::new(cc)))),
+        Box::new(|cc| {
+            let app = open_gtd_core::App::new(cc);
+            Ok(Box::new(app))
+        }),
     )
 }

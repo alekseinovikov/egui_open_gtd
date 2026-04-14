@@ -1,4 +1,6 @@
 use super::{Action, Widget};
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub struct CenteredContainerWidget {
     widget_children: Vec<Box<dyn Widget>>,
@@ -26,34 +28,27 @@ impl CenteredContainerWidget {
         &self.widget_children
     }
 
-    fn render_children(&self, ui: &mut egui::Ui) -> Vec<Action> {
+    fn render_children(&self, ui: &mut egui::Ui, actions: &mut Vec<Rc<RefCell<dyn Action>>>) {
         let children = self.children();
-        let mut result: Vec<Action> = vec![];
         for (i, child) in children.iter().enumerate() {
-            let actions = child.render(ui);
-            result.extend(actions);
+            child.render(ui, actions);
 
             if i < children.len() - 1 {
                 ui.add_space(8.0);
             }
         }
-
-        result
     }
 }
 
 impl Widget for CenteredContainerWidget {
-    fn render(&self, ui: &mut egui::Ui) -> Vec<Action> {
-        let mut result = vec![];
+    fn render(&self, ui: &mut egui::Ui, actions: &mut Vec<Rc<RefCell<dyn Action>>>) {
         ui.with_layout(
             egui::Layout::centered_and_justified(egui::Direction::TopDown),
             |ui| {
                 ui.vertical_centered(|ui| {
-                    let actions = self.render_children(ui);
-                    result.extend(actions);
+                    self.render_children(ui, actions);
                 });
             },
         );
-        result
     }
 }
