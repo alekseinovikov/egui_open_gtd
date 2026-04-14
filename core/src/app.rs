@@ -1,20 +1,22 @@
-use crate::Screen as _;
 use crate::main_screen::MainScreen;
-use crate::widgets::Action;
+use crate::widgets::{Action, CenteredContainerWidget, Widget};
+use crate::Screen;
 use egui::ThemePreference;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub struct App {
-    state: Rc<RefCell<AppState>>,
+pub struct App<W: Widget> {
+    _state: Rc<RefCell<AppState>>,
+    current_screen: Rc<RefCell<Box<dyn Screen<W>>>>,
 }
 
-impl App {
+impl<W: Widget> App<W> where MainScreen: Screen<W> {
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
         cc.egui_ctx.set_theme(ThemePreference::Dark);
+        let state = Rc::new(RefCell::new(AppState::default()));
         Self {
-            state: Rc::new(RefCell::new(AppState::default())),
+            _state: Rc::<RefCell<AppState>>::clone(&state),
+            current_screen: Rc::new(RefCell::new(Box::new(MainScreen::new(&state, &cc.egui_ctx)))),
         }
     }
 }
@@ -30,9 +32,9 @@ impl Default for AppState {
     }
 }
 
-impl eframe::App for App {
+impl eframe::App for App<CenteredContainerWidget> {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        MainScreen::new(&self.state, ui).render(ui, _frame);
+        self.current_screen.borrow_mut().render(ui, _frame);
     }
 }
 
