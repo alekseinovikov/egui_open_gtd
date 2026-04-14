@@ -1,6 +1,4 @@
-use crate::widgets::{
-    Action, ButtonWidget, CenteredContainerWidget, TextWidget, Widget,
-};
+use crate::widgets::{Action, ButtonWidget, CenteredContainerWidget, TextWidget, Widget};
 
 #[derive(Default, serde::Deserialize, serde::Serialize)]
 #[serde(default)]
