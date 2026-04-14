@@ -60,13 +60,14 @@ impl eframe::App for TemplateApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         // Take the root out so `self` is free for handle_action
         let root = self.root.take().expect("root widget not initialized");
-        let mut triggered_action = None;
+        let mut triggered_actions: Vec<Action> = vec![];
         egui::CentralPanel::default().show_inside(ui, |ui| {
-            triggered_action = root.render(ui);
+            let actions = root.render(ui);
+            triggered_actions.extend(actions);
         });
         self.root = Some(root);
 
-        if let Some(action) = triggered_action {
+        for action in triggered_actions {
             self.handle_action(action, ui.ctx());
         }
     }

@@ -15,15 +15,11 @@ impl ButtonWidget {
 }
 
 impl Widget for ButtonWidget {
-    fn children(&self) -> &[Box<dyn Widget>] {
-        &[]
-    }
-
-    fn render(&self, ui: &mut egui::Ui) -> Option<Action> {
+    fn render(&self, ui: &mut egui::Ui) -> Vec<Action> {
         if ui.button(&self.label).clicked() {
-            Some(self.action)
+            vec![self.action]
         } else {
-            None
+            vec![]
         }
     }
 }

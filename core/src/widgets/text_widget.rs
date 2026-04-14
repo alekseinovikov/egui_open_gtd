@@ -11,12 +11,8 @@ impl TextWidget {
 }
 
 impl Widget for TextWidget {
-    fn children(&self) -> &[Box<dyn Widget>] {
-        &[]
-    }
-
-    fn render(&self, ui: &mut egui::Ui) -> Option<Action> {
+    fn render(&self, ui: &mut egui::Ui) -> Vec<Action> {
         ui.heading(&self.text);
-        None
+        vec![]
     }
 }

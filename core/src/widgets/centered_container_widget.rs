@@ -21,20 +21,36 @@ impl CenteredContainerWidget {
         self.widget_children.push(Box::new(widget));
         self
     }
-}
 
-impl Widget for CenteredContainerWidget {
     fn children(&self) -> &[Box<dyn Widget>] {
         &self.widget_children
     }
 
-    fn render(&self, ui: &mut egui::Ui) -> Option<Action> {
-        let mut result = None;
+    fn render_children(&self, ui: &mut egui::Ui) -> Vec<Action> {
+        let children = self.children();
+        let mut result: Vec<Action> = vec![];
+        for (i, child) in children.iter().enumerate() {
+            let actions = child.render(ui);
+            result.extend(actions);
+
+            if i < children.len() - 1 {
+                ui.add_space(8.0);
+            }
+        }
+
+        result
+    }
+}
+
+impl Widget for CenteredContainerWidget {
+    fn render(&self, ui: &mut egui::Ui) -> Vec<Action> {
+        let mut result = vec![];
         ui.with_layout(
             egui::Layout::centered_and_justified(egui::Direction::TopDown),
             |ui| {
                 ui.vertical_centered(|ui| {
-                    result = self.render_children(ui);
+                    let actions = self.render_children(ui);
+                    result.extend(actions);
                 });
             },
         );

@@ -12,20 +12,5 @@ pub enum Action {
 }
 
 pub trait Widget {
-    fn children(&self) -> &[Box<dyn Widget>];
-    fn render(&self, ui: &mut egui::Ui) -> Option<Action>;
-
-    fn render_children(&self, ui: &mut egui::Ui) -> Option<Action> {
-        let children = self.children();
-        let mut result = None;
-        for (i, child) in children.iter().enumerate() {
-            if let Some(action) = child.render(ui) {
-                result = Some(action);
-            }
-            if i < children.len() - 1 {
-                ui.add_space(8.0);
-            }
-        }
-        result
-    }
+    fn render(&self, ui: &mut egui::Ui) -> Vec<Action>;
 }
