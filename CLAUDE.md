@@ -15,13 +15,17 @@
 ```
 egui_open_gtd/
 ├── Cargo.toml           — workspace manifest (lints, profiles, patch)
-├── android/             — shared library: TemplateApp logic + Android entry point
-│   ├── Cargo.toml       — cdylib+rlib, android metadata (cargo-apk)
+├── core/                — shared library: platform-independent app logic
+│   ├── Cargo.toml       — package "open_gtd_core" (rlib)
 │   └── src/
-│       ├── lib.rs       — pub use TemplateApp + android_main
+│       ├── lib.rs       — pub use TemplateApp
 │       └── app.rs       — TemplateApp UI implementation
+├── android/             — Android entry point
+│   ├── Cargo.toml       — package "open_gtd_android" (cdylib+rlib), android metadata
+│   └── src/
+│       └── lib.rs       — android_main, depends on open_gtd_core
 ├── desktop/             — desktop binary
-│   ├── Cargo.toml       — depends on android lib via path
+│   ├── Cargo.toml       — package "open_gtd_desktop", depends on open_gtd_core
 │   └── src/main.rs      — fn main() for Linux/macOS/Windows
 └── assets/
     └── favicon-512x512.png  — desktop window icon
@@ -31,8 +35,8 @@ egui_open_gtd/
 
 ```bash
 # Desktop
-cargo run -p eframe_template_desktop
-cargo build -p eframe_template_desktop --release
+cargo run -p open_gtd_desktop
+cargo build -p open_gtd_desktop --release
 
 # Android (run from android/ subdirectory — cargo-apk limitation)
 cd android

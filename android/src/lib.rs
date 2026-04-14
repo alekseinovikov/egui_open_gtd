@@ -1,8 +1,5 @@
 #![warn(clippy::all, rust_2018_idioms)]
 
-mod app;
-pub use app::TemplateApp;
-
 #[cfg(target_os = "android")]
 #[allow(unsafe_code)]
 #[unsafe(no_mangle)]
@@ -12,9 +9,9 @@ fn android_main(app: android_activity::AndroidApp) {
         ..Default::default()
     };
     eframe::run_native(
-        "eframe template",
+        "egui Open GTD",
         options,
-        Box::new(|cc| Ok(Box::new(TemplateApp::new(cc)))),
+        Box::new(|cc| Ok(Box::new(open_gtd_core::TemplateApp::new(cc)))),
     )
     .expect("Failed to run app");
 }

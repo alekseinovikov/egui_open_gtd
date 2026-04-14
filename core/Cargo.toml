@@ -1,6 +1,7 @@
 [package]
-name = "open_gtd_desktop"
+name = "open_gtd_core"
 version = "0.1.0"
+authors = ["Aleksei Novikov <novikov.aleksei.92@gmail.com>"]
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.92"
@@ -9,7 +10,7 @@ rust-version = "1.92"
 workspace = true
 
 [dependencies]
-open_gtd_core = { path = "../core" }
 egui = "0.34.1"
 eframe = { version = "0.34.1", features = ["persistence"] }
-env_logger = "0.11.8"
+log = "0.4.27"
+serde = { version = "1.0.219", features = ["derive"] }

@@ -1,5 +1,5 @@
 [package]
-name = "eframe_template"
+name = "open_gtd_android"
 version = "0.1.0"
 authors = ["Aleksei Novikov <novikov.aleksei.92@gmail.com>"]
 edition = "2024"
@@ -27,10 +27,8 @@ key_alias = "my_app"
 key_password = "android"
 
 [dependencies]
-egui = "0.34.1"
+open_gtd_core = { path = "../core" }
 eframe = { version = "0.34.1", features = ["persistence"] }
-log = "0.4.27"
-serde = { version = "1.0.219", features = ["derive"] }
 
 [target.'cfg(target_os = "android")'.dependencies]
 android-activity = { version = "0.6", features = ["native-activity"] }
